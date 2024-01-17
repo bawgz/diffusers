@@ -279,16 +279,16 @@ def warn_deprecated_model_variant(pretrained_model_name_or_path, token, variant,
 
 def _unwrap_model(model):
     """Unwraps a model."""
-    print("unwrapping the model", model)
+    print("unwrapping the model")
     if is_compiled_module(model):
-        print("setting model to original model", model._orig_mod)
+        print("setting model to original model")
         model = model._orig_mod
 
     if is_peft_available():
         from peft import PeftModel
 
         if isinstance(model, PeftModel):
-            print("setting model to base model", model.base_model.model)
+            print("setting model to base model")
             model = model.base_model.model
 
     return model
