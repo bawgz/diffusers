@@ -673,6 +673,7 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
         model_index_dict = {k: v for k, v in model_index_dict.items() if is_saveable_module(k, v)}
         for pipeline_component_name in model_index_dict.keys():
             sub_model = getattr(self, pipeline_component_name)
+            print("sub model", sub_model)
             model_cls = sub_model.__class__
 
             # Dynamo wraps the original model in a private class.
@@ -695,7 +696,7 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
                     class_candidate = getattr(library, base_class, None)
                     if class_candidate is not None and issubclass(model_cls, class_candidate):
                         # if we found a suitable base class in LOADABLE_CLASSES then grab its save method
-                        print("save method name", save_load_methods[0])
+                        # print("save method name", save_load_methods[0])
                         save_method_name = save_load_methods[0]
                         break
                 if save_method_name is not None:
@@ -720,9 +721,9 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
             if save_method_accept_variant:
                 save_kwargs["variant"] = variant
 
-            print("save kwargs", save_kwargs)
-            print("pipeline component name", pipeline_component_name)
-            print("save method", save_method)
+            # print("save kwargs", save_kwargs)
+            # print("pipeline component name", pipeline_component_name)
+            # print("save method", save_method)
 
             save_method(os.path.join(save_directory, pipeline_component_name), **save_kwargs)
 
@@ -1263,6 +1264,8 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
 
         # 6. Load each module in the pipeline
         for name, (library_name, class_name) in logging.tqdm(init_dict.items(), desc="Loading pipeline components..."):
+            
+            print("loading " + name + " from " + library_name + " as " + class_name)
             # 6.1 - now that JAX/Flax is an official framework of the library, we might load from Flax names
             class_name = class_name[4:] if class_name.startswith("Flax") else class_name
 
