@@ -468,7 +468,11 @@ def load_sub_model(
             f" any of the loading methods defined in {ALL_IMPORTABLE_CLASSES}."
         )
 
+
+    print("load method name", load_method_name)
+    print("class obj", class_obj)
     load_method = getattr(class_obj, load_method_name)
+    print("load method", load_method)
 
     # add kwargs to loading method
     diffusers_module = importlib.import_module(__name__.split(".")[0])
@@ -1263,6 +1267,8 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
         # import it here to avoid circular import
         from diffusers import pipelines
 
+        print("passed class obj", passed_class_obj)
+
         # 6. Load each module in the pipeline
         for name, (library_name, class_name) in logging.tqdm(init_dict.items(), desc="Loading pipeline components..."):
             
@@ -1283,7 +1289,9 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
                     library_name, library, class_name, importable_classes, passed_class_obj, name, is_pipeline_module
                 )
 
+                print("preparing to fetch loaded sub model", name)
                 loaded_sub_model = passed_class_obj[name]
+                print("fetched loaded sub model", name, loaded_sub_model)
             else:
                 # load sub model
                 loaded_sub_model = load_sub_model(
