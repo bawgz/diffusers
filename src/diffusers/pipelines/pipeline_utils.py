@@ -663,8 +663,10 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
 
         def is_saveable_module(name, value):
             if name not in expected_modules:
+                print("name not in expected modules", name)
                 return False
             if name in self._optional_components and value[0] is None:
+                print("name in optional components", name)
                 return False
             return True
 
@@ -693,6 +695,7 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
                     class_candidate = getattr(library, base_class, None)
                     if class_candidate is not None and issubclass(model_cls, class_candidate):
                         # if we found a suitable base class in LOADABLE_CLASSES then grab its save method
+                        print("save method name", save_load_methods[0])
                         save_method_name = save_load_methods[0]
                         break
                 if save_method_name is not None:
@@ -716,6 +719,10 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
                 save_kwargs["safe_serialization"] = safe_serialization
             if save_method_accept_variant:
                 save_kwargs["variant"] = variant
+
+            print("save kwargs", save_kwargs)
+            print("pipeline component name", pipeline_component_name)
+            print("save method", save_method)
 
             save_method(os.path.join(save_directory, pipeline_component_name), **save_kwargs)
 
