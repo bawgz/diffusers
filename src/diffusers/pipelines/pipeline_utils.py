@@ -727,7 +727,7 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
 
             # print("save kwargs", save_kwargs)
             # print("pipeline component name", pipeline_component_name)
-            # print("save method", save_method)
+            print("save method", save_method)
 
             save_method(os.path.join(save_directory, pipeline_component_name), **save_kwargs)
 

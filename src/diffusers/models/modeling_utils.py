@@ -639,6 +639,8 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
                     commit_hash=commit_hash,
                 )
 
+            print("model file", model_file)
+
             if low_cpu_mem_usage:
                 # Instantiate model with empty weights
                 with accelerate.init_empty_weights():
