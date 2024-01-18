@@ -1053,7 +1053,6 @@ class LoraLoaderMixin:
             print("self.unet_name", self.unet_name)
             unet = getattr(self, self.unet_name) if not hasattr(self, "unet") else self.unet
 
-            print("unet.fuse_lora", unet.fuse_lora)
             unet.fuse_lora(lora_scale, safe_fusing=safe_fusing, adapter_names=adapter_names)
 
         if USE_PEFT_BACKEND:
