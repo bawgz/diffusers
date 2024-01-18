@@ -1047,8 +1047,13 @@ class LoraLoaderMixin:
                     "The current API is supported for operating with a single LoRA file. You are trying to load and fuse more than one LoRA which is not well-supported.",
                 )
 
+        print("fuse unet", fuse_unet)
         if fuse_unet:
+            print("hasattr(self, \"unet\")", hasattr(self, "unet"))
+            print("self.unet_name", self.unet_name)
             unet = getattr(self, self.unet_name) if not hasattr(self, "unet") else self.unet
+
+            print("unet.fuse_lora", unet.fuse_lora)
             unet.fuse_lora(lora_scale, safe_fusing=safe_fusing, adapter_names=adapter_names)
 
         if USE_PEFT_BACKEND:
