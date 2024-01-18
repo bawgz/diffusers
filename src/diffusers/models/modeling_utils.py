@@ -652,7 +652,7 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
                     param_device = "cpu"
                     state_dict = load_state_dict(model_file, variant=variant)
                     
-                    if config._class_name == "UNet2DConditionModel":
+                    if config["_class_name"] == "UNet2DConditionModel":
                         from peft import get_peft_model_state_dict
 
                         state_dict = get_peft_model_state_dict(model, state_dict)
