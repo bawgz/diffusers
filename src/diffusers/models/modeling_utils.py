@@ -651,14 +651,19 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
                 if device_map is None:
                     param_device = "cpu"
 
-                    if config["_class_name"] == "UNet2DConditionModel":
-                        from peft import load_peft_weights
+                    # if config["_class_name"] == "UNet2DConditionModel":
+                    #     from peft import load_peft_weights
 
-                        state_dict = load_peft_weights(model_file, device=torch_dtype)
+                    #     state_dict = load_peft_weights(model_file, device=torch_dtype)
 
-                        print("got the peft state dict")
-                    else:
-                        state_dict = load_state_dict(model_file, variant=variant)
+                    #     print("got the peft state dict")
+                    # else:
+                    #     state_dict = load_state_dict(model_file, variant=variant)
+
+                    state_dict = load_state_dict(model_file, variant=variant)
+
+                    load_result = model.load_state_dict(state_dict, strict=False)
+
 
                     missing_keys_before_conversion = set(model.state_dict().keys()) - set(state_dict.keys())
                     print("missing keys before conversion", missing_keys_before_conversion)
