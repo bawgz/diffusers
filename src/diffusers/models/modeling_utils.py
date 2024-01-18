@@ -651,15 +651,13 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
                 if device_map is None:
                     param_device = "cpu"
                     state_dict = load_state_dict(model_file, variant=variant)
-                    print("model", model)
-                    print("state_dict", state_dict)
-                    print("convert deprecated attention blocks")
+                    missing_keys_before_conversion = set(model.state_dict().keys()) - set(state_dict.keys())
+                    print("missing keys before conversion", missing_keys_before_conversion)
                     model._convert_deprecated_attention_blocks(state_dict)
                     # move the params from meta device to cpu
 
-                    print("model", model)
-                    print("state_dict", state_dict)
                     missing_keys = set(model.state_dict().keys()) - set(state_dict.keys())
+                    print("missing keys after conversion", missing_keys)
                     if len(missing_keys) > 0:
                         raise ValueError(
                             f"Cannot load {cls} from {pretrained_model_name_or_path} because the following keys are"
