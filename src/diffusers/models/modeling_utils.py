@@ -640,6 +640,7 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
                 )
 
             print("model file", model_file)
+            print("low_cpu_mem_usage", low_cpu_mem_usage)
 
             if low_cpu_mem_usage:
                 # Instantiate model with empty weights
@@ -650,8 +651,14 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
                 if device_map is None:
                     param_device = "cpu"
                     state_dict = load_state_dict(model_file, variant=variant)
+                    print("model", model)
+                    print("state_dict", state_dict)
+                    print("convert deprecated attention blocks")
                     model._convert_deprecated_attention_blocks(state_dict)
                     # move the params from meta device to cpu
+
+                    print("model", model)
+                    print("state_dict", state_dict)
                     missing_keys = set(model.state_dict().keys()) - set(state_dict.keys())
                     if len(missing_keys) > 0:
                         raise ValueError(
