@@ -673,6 +673,10 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
                     # move the params from meta device to cpu
 
                     missing_keys = set(model.state_dict().keys()) - set(state_dict.keys())
+
+                    print("missing keys", missing_keys)
+                    print("state dict keys", state_dict.keys())
+                    
                     # print("missing keys after conversion", missing_keys)
                     if len(missing_keys) > 0:
                         raise ValueError(
