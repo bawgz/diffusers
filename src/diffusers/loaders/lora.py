@@ -428,6 +428,7 @@ class LoraLoaderMixin:
                 logger.warn(warn_message)
 
         if USE_PEFT_BACKEND and len(state_dict.keys()) > 0:
+            print("using that PEFT backend")
             from peft import LoraConfig, inject_adapter_in_model, set_peft_model_state_dict
 
             if adapter_name in getattr(unet, "peft_config", {}):

@@ -469,10 +469,10 @@ def load_sub_model(
         )
 
 
-    print("load method name", load_method_name)
-    print("class obj", class_obj)
+    # print("load method name", load_method_name)
+    # print("class obj", class_obj)
     load_method = getattr(class_obj, load_method_name)
-    print("load method", load_method)
+    # print("load method", load_method)
 
     # add kwargs to loading method
     diffusers_module = importlib.import_module(__name__.split(".")[0])
@@ -677,7 +677,7 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
         model_index_dict = {k: v for k, v in model_index_dict.items() if is_saveable_module(k, v)}
         for pipeline_component_name in model_index_dict.keys():
             sub_model = getattr(self, pipeline_component_name)
-            print("sub model", sub_model)
+            # print("sub model", sub_model)
             model_cls = sub_model.__class__
 
             # Dynamo wraps the original model in a private class.
@@ -727,7 +727,7 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
 
             # print("save kwargs", save_kwargs)
             # print("pipeline component name", pipeline_component_name)
-            print("save method", save_method)
+            # print("save method", save_method)
 
             save_method(os.path.join(save_directory, pipeline_component_name), **save_kwargs)
 
@@ -1267,7 +1267,7 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
         # import it here to avoid circular import
         from diffusers import pipelines
 
-        print("passed class obj", passed_class_obj)
+        # print("passed class obj", passed_class_obj)
 
         # 6. Load each module in the pipeline
         for name, (library_name, class_name) in logging.tqdm(init_dict.items(), desc="Loading pipeline components..."):
@@ -1291,7 +1291,7 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
 
                 print("preparing to fetch loaded sub model", name)
                 loaded_sub_model = passed_class_obj[name]
-                print("fetched loaded sub model", name, loaded_sub_model)
+                # print("fetched loaded sub model", name, loaded_sub_model)
             else:
                 # load sub model
                 loaded_sub_model = load_sub_model(
