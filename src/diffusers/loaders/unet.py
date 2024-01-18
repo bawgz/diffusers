@@ -512,6 +512,7 @@ class UNet2DConditionLoadersMixin:
         self.apply(partial(self._fuse_lora_apply, adapter_names=adapter_names))
 
     def _fuse_lora_apply(self, module, adapter_names=None):
+        print("USE_PEFT_BACKEND", USE_PEFT_BACKEND)
         if not USE_PEFT_BACKEND:
             if hasattr(module, "_fuse_lora"):
                 module._fuse_lora(self.lora_scale, self._safe_fusing)
@@ -526,7 +527,7 @@ class UNet2DConditionLoadersMixin:
             from peft.tuners.tuners_utils import BaseTunerLayer
 
             merge_kwargs = {"safe_merge": self._safe_fusing}
-
+            print("isinstance(module, BaseTunerLayer)", isinstance(module, BaseTunerLayer))
             if isinstance(module, BaseTunerLayer):
                 if self.lora_scale != 1.0:
                     module.scale_layer(self.lora_scale)
@@ -542,6 +543,8 @@ class UNet2DConditionLoadersMixin:
                         " to the latest version of PEFT. `pip install -U peft`"
                     )
 
+                print("merge_kwargs", merge_kwargs)
+                print("performing peft merge")
                 module.merge(**merge_kwargs)
 
     def unfuse_lora(self):
