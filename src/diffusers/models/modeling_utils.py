@@ -28,6 +28,11 @@ from huggingface_hub import create_repo
 from huggingface_hub.utils import validate_hf_hub_args
 from torch import Tensor, nn
 
+from diffusers.utils.constants import USE_PEFT_BACKEND
+from peft import set_peft_model_state_dict, LoraConfig
+
+from diffusers.utils.peft_utils import get_adapter_name, get_peft_kwargs
+
 from .. import __version__
 from ..utils import (
     CONFIG_NAME,
@@ -651,16 +656,40 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
                 if device_map is None:
                     param_device = "cpu"
 
-                    # if config["_class_name"] == "UNet2DConditionModel":
-                    #     from peft import load_peft_weights
+                    state_dict = load_state_dict(model_file, variant=variant)
 
-                    #     state_dict = load_peft_weights(model_file, device=torch_dtype)
+                    if config["_class_name"] == "UNet2DConditionModel" and USE_PEFT_BACKEND:
+                        from peft import LoraConfig, inject_adapter_in_model, set_peft_model_state_dict
+                        
+                        state_dict = load_state_dict(model_file, variant=variant)
 
-                    #     print("got the peft state dict")
+                        rank = {}
+                        for key, val in state_dict.items():
+                            if "lora_B" in key:
+                                rank[key] = val.shape[1]
+
+                        lora_config_kwargs = get_peft_kwargs(rank, None, state_dict, is_unet=True)
+                        lora_config = LoraConfig(**lora_config_kwargs)
+
+                        # adapter_name
+                        if adapter_name is None:
+                            adapter_name = get_adapter_name(model)
+
+                        inject_adapter_in_model(lora_config, model, adapter_name=adapter_name)
+                        incompatible_keys = set_peft_model_state_dict(model, state_dict, adapter_name)
+
+                        if incompatible_keys is not None:
+                            # check only for unexpected keys
+                            unexpected_keys = getattr(incompatible_keys, "unexpected_keys", None)
+                            if unexpected_keys:
+                                logger.warning(
+                                    f"Loading adapter weights from state_dict led to unexpected keys not found in the model: "
+                                    f" {unexpected_keys}. "
+                                )
+
                     # else:
                     #     state_dict = load_state_dict(model_file, variant=variant)
 
-                    state_dict = load_state_dict(model_file, variant=variant)
 
                     # if config["_class_name"] == "UNet2DConditionModel":
                     #     load_result = model.load_state_dict(state_dict, strict=False)
@@ -676,7 +705,7 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
 
                     print("missing keys", missing_keys)
                     print("state dict keys", state_dict.keys())
-                    
+
                     # print("missing keys after conversion", missing_keys)
                     if len(missing_keys) > 0:
                         raise ValueError(
