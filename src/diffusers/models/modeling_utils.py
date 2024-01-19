@@ -672,8 +672,7 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
                         lora_config = LoraConfig(**lora_config_kwargs)
 
                         # adapter_name
-                        if adapter_name is None:
-                            adapter_name = get_adapter_name(model)
+                        adapter_name = get_adapter_name(model)
 
                         inject_adapter_in_model(lora_config, model, adapter_name=adapter_name)
                         incompatible_keys = set_peft_model_state_dict(model, state_dict, adapter_name)
