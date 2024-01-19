@@ -29,7 +29,6 @@ from huggingface_hub.utils import validate_hf_hub_args
 from torch import Tensor, nn
 
 from diffusers.utils.constants import USE_PEFT_BACKEND
-from peft import set_peft_model_state_dict, LoraConfig
 
 from diffusers.utils.peft_utils import get_adapter_name, get_peft_kwargs
 
@@ -675,7 +674,7 @@ class ModelMixin(torch.nn.Module, PushToHubMixin):
                         adapter_name = get_adapter_name(model)
 
                         inject_adapter_in_model(lora_config, model, adapter_name=adapter_name)
-                        incompatible_keys = set_peft_model_state_dict(model, state_dict, adapter_name)
+                        incompatible_keys = set_peft_model_state_dict(model, state_dict, "toy")
 
                         if incompatible_keys is not None:
                             # check only for unexpected keys
